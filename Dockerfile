@@ -1,5 +1,5 @@
 FROM ruby:2.7.0
-RUN apt-get update -qq && apt-get install -y build-essential nodejs
+RUN apt-get update -qq && apt-get install -y build-essential nodejs mariadb-client
 RUN mkdir /app
 WORKDIR /app
 COPY Gemfile /app/Gemfile
