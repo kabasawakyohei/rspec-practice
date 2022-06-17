@@ -42,7 +42,6 @@ RSpec.describe FoodEnquete, type: :model do
 
    describe '入力項目の有無' do
     context '必須入力であること' do
-      # [Point.3-4-1]itを複数書くことができます。
       it 'お名前が必須であること' do
         new_enquete = FoodEnquete.new
         # [Point.3-4-2]バリデーションエラーが発生することを検証します。
@@ -57,11 +56,9 @@ RSpec.describe FoodEnquete, type: :model do
         expect(new_enquete.errors[:mail]).to include(I18n.t('errors.messages.blank'))
       end
 
-      # [Point.3-4-1]itを複数書くことができます。
       it '登録できないこと' do
         new_enquete = FoodEnquete.new
 
-        # [Point.3-4-4]保存に失敗することを検証します。
         expect(new_enquete.save).to be_falsey
       end
     end
@@ -77,6 +74,66 @@ RSpec.describe FoodEnquete, type: :model do
       end
     end
 
+  end
+
+
+   describe 'アンケート回答時の条件' do
+     context '年齢を確認すること' do
+       it '未成年はビール飲み放題選択できないこと' do
+         # 未成年のテストデータ作成
+          enquete_sato = FoodEnquete.new(
+           name: '佐藤 仁美',
+           mail: 'hitomi.sato@example.com',
+           age: 19,
+           food_id: 2,
+           score: 3,
+           request: 'おいしかったです。',
+           present_id: 1 #ビール飲み放題 
+          )
+          expect(enquete_sato).not_to be_valid
+          expect(enquete_sato.errors[:present_id]).to include(I18n.t('activerecord.errors.models.food_enquete.attributes.present_id.cannot_present_to_minor'))
+       end
+
+       it '成人はビール飲み放題を選択できる' do
+        # 成人のテストデータを作成  
+        enquete_sato = FoodEnquete.new(
+            name: '佐藤 仁美',
+            mail: 'hitomi.sato@example.com',
+            age: 20,
+            food_id: 2,
+            score: 3,
+            request: 'おいしかったです。',
+            present_id: 1   # ビール飲み放題
+        )
+
+        expect(enquete_sato).to be_valid
+       end
+
+
+     end
+   end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  describe '#adult?' do
+    it '20歳未満は成人ではないこと' do
+      foodEnquete = FoodEnquete.new
+      # 未成年になることを検証する
+      expect(foodEnquete.send(:adult?, 19)).to be_falsey
+    end
   end
 
 
