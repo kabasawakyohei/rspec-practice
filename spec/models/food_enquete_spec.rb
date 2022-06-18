@@ -78,6 +78,41 @@ RSpec.describe FoodEnquete, type: :model do
 
 
    describe 'アンケート回答時の条件' do
+
+     context 'メールアドレスを確認すること' do
+       it '同じメールアドレスで再び回答できないこと' do
+         # テストデータの作成
+          enquete_tanaka = FoodEnquete.new(
+            name: '田中 太郎',
+            mail: 'taro.tanaka@example.com',
+            age: 25,
+            food_id: 2,
+            score: 3,
+            request: 'おいしかったです。',
+            present_id: 1
+          )
+          enquete_tanaka.save
+
+          # 2つ目のテストデータを作成
+          re_enquete_tanaka = FoodEnquete.new(
+            name: '田中 太郎',
+            mail: 'taro.tanaka@example.com',
+            age: 25,
+            food_id: 0,
+            score: 1,
+            request: 'スープがぬるかった',
+            present_id: 0
+          )
+          expect(re_enquete_tanaka).not_to be_valid
+
+          #メールアドレスがすでに存在するメッセージが含まれていることを検証する
+          expect(re_enquete_tanaka.errors[:mail]).to include(I18n.t('errors.messages.taken'))
+          expect(re_enquete_tanaka.save).to be_falsey
+          expect(FoodEnquete.all.size).to eq 1
+       end
+     end
+
+
      context '年齢を確認すること' do
        it '未成年はビール飲み放題選択できないこと' do
          # 未成年のテストデータ作成
