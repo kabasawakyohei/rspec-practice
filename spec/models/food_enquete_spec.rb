@@ -31,55 +31,6 @@ RSpec.describe FoodEnquete, type: :model do
     end
   end
 
-   describe '入力項目の有無' do
-
-     # インスタンスを共通化してテストデータを作成する
-    let(:new_enquete){ FoodEnquete.new }
-
-    context '必須入力であること' do
-      it 'お名前が必須であること' do
-        # [Point.3-4-2]バリデーションエラーが発生することを検証します。
-        expect(new_enquete).not_to be_valid
-        # [Point.3-4-3]必須入力のメッセージが含まれることを検証します。
-        expect(new_enquete.errors[:name]).to include(I18n.t('errors.messages.blank'))
-      end
-
-      it 'メールアドレスが必須であること' do
-        expect(new_enquete).not_to be_valid
-        expect(new_enquete.errors[:mail]).to include(I18n.t('errors.messages.blank'))
-      end
-
-      it '登録できないこと' do
-
-        expect(new_enquete.save).to be_falsey
-      end
-    end
-
-    context '任意入力であること' do
-      it 'ご意見・ご要望が任意であること' do
-        #バリデーションエラーが発生することを検証する
-        expect(new_enquete).not_to be_valid
-
-        # 入力必須のメッセージが含まれていないことを検証する
-        expect(new_enquete.errors[:request]).not_to include(I18n.t('errors.messages.blank'))
-      end
-    end
-
-   end
-
-   describe 'メールアドレスの形式' do
-     context '不正な形式のメールアドレスの場合' do
-       it 'エラーになること' do
-         new_enquete = FoodEnquete.new
-         # 不正なメールアドレスをインスタンスに代入する
-         new_enquete.mail = "taro.tanaka"
-         expect(new_enquete).not_to be_valid
-         # 不正な形式であることのメッセージが含まれていることを検証する
-         expect(new_enquete.errors[:mail]).to include(I18n.t('errors.messages.invalid'))
-       end
-     end
-   end
-
    describe 'アンケート回答時の条件' do
 
      context 'メールアドレスを確認すること' do
@@ -135,21 +86,6 @@ RSpec.describe FoodEnquete, type: :model do
      end
    end
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   describe '#adult?' do
     it '20歳未満は成人ではないこと' do
       foodEnquete = FoodEnquete.new
@@ -158,6 +94,15 @@ RSpec.describe FoodEnquete, type: :model do
     end
   end
 
+  describe '共通バリデーション' do
+    it_behaves_like '入力項目の有無'
+    it_behaves_like 'メールアドレスの形式'    
+  end
 
+  describe '共通メソッド' do
+    # 共通化するテストケースを定義する
+    it_behaves_like '価格の表示'
+    it_behaves_like '満足度の表示'
+  end
 
 end
