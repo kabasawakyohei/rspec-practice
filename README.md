@@ -21,4 +21,8 @@ Things you may want to cover:
 
 * Deployment instructions
 
-* ...
+# devDB初期化コマンド
+docker-compose run web rails db:migrate:reset RAILS_ENV=test
+
+# rspec実行コマンド
+docker-compose run web bundle exec rspec spec/models/<filename>
